@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "kicksaw-integration-utils"
+version = "0.4.0"
+description = "A set of helper functions for CSV to Salesforce procedures, with reporting in AWS S3"
+readme = "README.md"
+repository = "https://github.com/Kicksaw-Consulting/kicksaw-integration-utils"
+authors = ["Alex Drozd <drozdster@gmail.com>", "Tim Sabat <tim@kicksaw.com>"]
+keywords = ["kicksaw", "aws", "s3", "simple salesforce", "csv"]
+packages = [
+    { include = "kicksaw_integration_utils" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+simple-salesforce = "^1.10.1"
+boto3 = "^1.17.3"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+black = "^20.8b1"
+moto = "^2.0.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
