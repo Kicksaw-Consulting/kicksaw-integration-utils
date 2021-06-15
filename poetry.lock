@@ -419,7 +419,7 @@ toml = ">=0.9.0"
 
 [[package]]
 name = "simple-salesforce"
-version = "1.10.1"
+version = "1.11.2"
 description = "A basic Salesforce.com REST API client."
 category = "main"
 optional = false
@@ -790,8 +790,8 @@ setuptools-rust = [
     {file = "setuptools_rust-0.11.6-py3-none-any.whl", hash = "sha256:5acf8cd8e89d57f0cd3cc942f60fa2ccfdede4c7a0b0d4b28eb7ab756df30347"},
 ]
 simple-salesforce = [
-    {file = "simple-salesforce-1.10.1.tar.gz", hash = "sha256:20fd66cf40da732b9cdcb2f7160dde7bb298ef0c31702d1fdd767d1fc68cfe1b"},
-    {file = "simple_salesforce-1.10.1-py2.py3-none-any.whl", hash = "sha256:ecbf4f612bb6a4a1897306537c9065d98098ada56e2de6be9ed52b39b3d056e5"},
+    {file = "simple-salesforce-1.11.2.tar.gz", hash = "sha256:995cf718bb240617b4c02c39c2c20288582916b11b06e7ebb6fb360729ee439b"},
+    {file = "simple_salesforce-1.11.2-py2.py3-none-any.whl", hash = "sha256:58812024224fe378027211d3ab637be9b06c8130ac248b3d407d8125cddd206c"},
 ]
 six = [
     {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
