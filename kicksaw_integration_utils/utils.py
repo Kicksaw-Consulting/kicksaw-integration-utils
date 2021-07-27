@@ -1,8 +1,18 @@
 import datetime
 import itertools
-from typing import Iterable
+import os
 
+from typing import Iterable
 from pathlib import Path
+from tempfile import gettempdir
+
+
+def get_temp() -> Path:
+    temp = gettempdir()
+    custom_temp = os.environ.get("TEMP")
+    if custom_temp:
+        temp = custom_temp
+    return Path(temp)
 
 
 def get_iso() -> str:

@@ -2,11 +2,10 @@ import boto3
 import os
 
 from pathlib import Path
-from tempfile import gettempdir
 from typing import Union
 from urllib.parse import unquote_plus
 
-from kicksaw_integration_utils.utils import get_iso
+from kicksaw_integration_utils.utils import get_iso, get_temp
 
 
 def upload_file(
@@ -77,7 +76,7 @@ def download_file(
         %TEMP%/archive/a_file.txt
     """
     if not download_path:
-        download_path = Path(gettempdir())
+        download_path = Path(get_temp())
 
     s3_client = boto3.client("s3")
     download_folder = download_path / os.path.dirname(s3_object_key)

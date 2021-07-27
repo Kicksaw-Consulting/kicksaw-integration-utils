@@ -1,18 +1,18 @@
 import csv
-
+import os
 from pathlib import Path
-from tempfile import gettempdir
-from typing import List, Tuple
+from typing import List
 
 
 def create_error_report(
-    error_groups: List[list],
-    report_path: Path = None,
+    errors: list,
+    report_path: Path,
     headers: List[str] = None,
-    download_path: Path = None,
-) -> Tuple[Path, int]:
+) -> int:
     """
     Takes in the errors from the output of parse_bulk_upsert_results and writes a report
+
+    TEMP must be defined in your django settings
     """
     csv_rows = []
     if not headers:
@@ -24,24 +24,22 @@ def create_error_report(
             "upsert_key_value",
             "object_json",
         ]
-    csv_rows.append(headers)
+
+    if not os.path.isfile(report_path):
+        csv_rows.append(headers)
 
     errors_count = 0
-    for group in error_groups:
-        for error in group:
-            errors_count += 1
-            csv_rows.append([error[header] for header in headers])
+    for error in errors:
+        errors_count += 1
+        csv_rows.append([error[header] for header in headers])
 
-    if not report_path:
-        if not download_path:
-            download_path = Path(gettempdir())
-        report_path = download_path / "error_report.csv"
+    Path(report_path.parent).mkdir(parents=True, exist_ok=True)
 
-    with open(report_path, mode="w", newline="") as file:
+    with open(report_path, mode="a", newline="") as file:
         writer = csv.writer(
             file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
         )
         for row in csv_rows:
             writer.writerow(row)
 
-    return report_path, errors_count
+    return errors_count
