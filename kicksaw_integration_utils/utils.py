@@ -44,3 +44,22 @@ def batch_collection(iterable: Iterable, size: int):
         if not chunk:
             break
         yield chunk
+
+
+def dedupe(elements: list, unique_prop: str) -> list:
+    seen_unique_props = set()
+    deduped_elements = list()
+
+    for element in elements:
+        if isinstance(element, dict):
+            unique_value = element[unique_prop]
+        else:
+            unique_value = getattr(element, unique_prop)
+
+        if unique_value in seen_unique_props:
+            continue
+
+        seen_unique_props.add(unique_value)
+        deduped_elements.append(element)
+
+    return deduped_elements
