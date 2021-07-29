@@ -130,3 +130,7 @@ def respond_to_s3_event(event, callback, *args, **kwargs):
 
 def get_filename_from_s3_key(s3_key: str):
     return os.path.basename(s3_key)
+
+
+def get_prefix_from_s3_key(s3_key: str):
+    return os.path.dirname(s3_key)
