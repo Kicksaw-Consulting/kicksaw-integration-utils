@@ -12,7 +12,7 @@ def create_error_report(
     """
     Takes in the errors from the output of parse_bulk_upsert_results and writes a report
 
-    TEMP must be defined in your django settings
+    TEMP must be defined in your settings
     """
     csv_rows = []
     if not headers:

@@ -5,6 +5,8 @@ from simple_salesforce.bulk import (
 )
 from simple_salesforce.exceptions import SalesforceMalformedRequest
 
+from kicksaw_integration_utils import settings
+
 
 class SFBulkType(BaseSFBulkType):
     def _bulk_operation(
@@ -51,13 +53,14 @@ class SFBulkHandler(BaseSFBulkHandler):
 
 class SfClient(Salesforce):
     def __init__(
-        self, username: str, password: str, security_token: str, domain: str = None
+        self,
     ):
         config = {
-            "username": username,
-            "password": password,
-            "security_token": security_token,
+            "username": settings.SFDC_USERNAME,
+            "password": settings.SFDC_PASSWORD,
+            "security_token": settings.SFDC_SECURITY_TOKEN,
         }
+        domain = settings.SFDC_DOMAIN
         if domain and domain.lower() != "na":
             config["domain"] = domain
 
