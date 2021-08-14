@@ -153,6 +153,14 @@ ssh = ["bcrypt (>=3.1.5)"]
 test = ["pytest (>=6.0)", "pytest-cov", "pytest-subtests", "pytest-xdist", "pretend", "iso8601", "pytz", "hypothesis (>=1.11.4,!=3.79.2)"]
 
 [[package]]
+name = "decorator"
+version = "5.0.9"
+description = "Decorators for Humans"
+category = "dev"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "idna"
 version = "2.10"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -337,6 +345,17 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 six = ">=1.5"
 
 [[package]]
+name = "python-soql-parser"
+version = "0.1.10"
+description = "A pyparsing-based library for parsing SOQL statements"
+category = "dev"
+optional = false
+python-versions = ">=3.8,<4.0"
+
+[package.dependencies]
+pyparsing = ">=2.4.7,<3.0.0"
+
+[[package]]
 name = "pytz"
 version = "2021.1"
 description = "World timezone definitions, modern and historical"
@@ -416,6 +435,19 @@ python-versions = ">=3.5"
 [package.dependencies]
 semantic-version = ">=2.6.0"
 toml = ">=0.9.0"
+
+[[package]]
+name = "simple-mockforce"
+version = "0.1.12"
+description = "A companion package for simple-salesforce that enables the testing of code that interacts with Salesforce's API"
+category = "dev"
+optional = false
+python-versions = ">=3.8,<4.0"
+
+[package.dependencies]
+decorator = ">=5.0.7,<6.0.0"
+python-soql-parser = ">=0.1.0,<0.2.0"
+responses = ">=0.13.2,<0.14.0"
 
 [[package]]
 name = "simple-salesforce"
@@ -517,7 +549,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "d4fb98cfbead33b6098d35fd9406686ba1a94cac5c6c868372f3858742f453db"
+content-hash = "fe239f3d909eebbeb497f1f317e3d4b6de46461a5d10ef89ac968f87f6d3dcc0"
 
 [metadata.files]
 appdirs = [
@@ -611,6 +643,10 @@ cryptography = [
     {file = "cryptography-3.4-cp36-abi3-win32.whl", hash = "sha256:b652ae00b3b7c6f0afef061686919206d92e12ce2c926dc28b68ccb1b3ceb630"},
     {file = "cryptography-3.4-cp36-abi3-win_amd64.whl", hash = "sha256:6f414e7f0fb5cb5667251fd32367674dbed90da45daa532827c8e54868e9a0b7"},
     {file = "cryptography-3.4.tar.gz", hash = "sha256:9f7aa11ea95723359f914be3217d8b378bc3897f65a1ec1ab4e0118c336f51fc"},
+]
+decorator = [
+    {file = "decorator-5.0.9-py3-none-any.whl", hash = "sha256:6e5c199c16f7a9f0e3a61a4a54b3d27e7dad0dbdde92b944426cb20914376323"},
+    {file = "decorator-5.0.9.tar.gz", hash = "sha256:72ecfba4320a893c53f9706bebb2d55c270c1e51a28789361aa93e4a21319ed5"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
@@ -722,6 +758,10 @@ python-dateutil = [
     {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
     {file = "python_dateutil-2.8.1-py2.py3-none-any.whl", hash = "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"},
 ]
+python-soql-parser = [
+    {file = "python-soql-parser-0.1.10.tar.gz", hash = "sha256:9e700710d709e956c1be9cbda6fce3c8c2dbd020999e04df45e143400197219d"},
+    {file = "python_soql_parser-0.1.10-py3-none-any.whl", hash = "sha256:9d64df5c495870f705cd4e6a8367b5f1494577dc3e0d9486f2dc3b01e8407408"},
+]
 pytz = [
     {file = "pytz-2021.1-py2.py3-none-any.whl", hash = "sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798"},
     {file = "pytz-2021.1.tar.gz", hash = "sha256:83a4a90894bf38e243cf052c8b58f381bfe9a7a483f6a9cab140bc7f702ac4da"},
@@ -788,6 +828,10 @@ semantic-version = [
 setuptools-rust = [
     {file = "setuptools-rust-0.11.6.tar.gz", hash = "sha256:a5b5954909cbc5d66b914ee6763f81fa2610916041c7266105a469f504a7c4ca"},
     {file = "setuptools_rust-0.11.6-py3-none-any.whl", hash = "sha256:5acf8cd8e89d57f0cd3cc942f60fa2ccfdede4c7a0b0d4b28eb7ab756df30347"},
+]
+simple-mockforce = [
+    {file = "simple-mockforce-0.1.12.tar.gz", hash = "sha256:69a57e04bc07ed37674e3abf920cf2d0eb2e57148720b639a55e6e1b823f3b44"},
+    {file = "simple_mockforce-0.1.12-py3-none-any.whl", hash = "sha256:fc3fd62758b6060b1a3f1a42a247884fe7b62c24f2f39ba1cf0e5bc6479d6fe4"},
 ]
 simple-salesforce = [
     {file = "simple-salesforce-1.11.2.tar.gz", hash = "sha256:995cf718bb240617b4c02c39c2c20288582916b11b06e7ebb6fb360729ee439b"},
