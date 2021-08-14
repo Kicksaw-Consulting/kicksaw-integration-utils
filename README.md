@@ -15,6 +15,13 @@ Typical use case:
 - Push the error report to an error folder in the same bucket
 - Push an object to Salesforce that details information about the above execution
 
+2nd typical use case:
+
+- Start an AWS Step Function
+- Pass the payload to the KicksawSalesforce client and create an execution object, recording this payload
+- upsert a bunch of data, parsing the responses
+- if any errors, push error objects into salesforce, chidling them to the execution object above
+
 # High-level Example
 
 Using the `Orchestrator` class, you can skip manually setting up a lot of the above
@@ -101,3 +108,14 @@ def download_and_process(s3_object_key, bucket_name):
 ```
 
 Just take what'cha need!
+
+# Integration app example
+
+To use Kicksaw's integration app, install this package (insert package link here) in your Salesforce organization.
+
+Once your org is ready to-go, instantiate the `KicksawSalesforce` class and operate like normal, but note:
+
+- Instantiating the client creates an execution object in Salesforce, unless you pass it the id of an already existing execution object
+- All of your bulk operations will have their errors parsed and error objects created in Salesforce if applicable.
+
+For code examples, please refer to `tests/test_integrations.py`.
