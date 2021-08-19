@@ -1,3 +1,5 @@
+import json
+
 from types import SimpleNamespace
 
 from kicksaw_integration_utils.integrations.salesforce import KicksawSalesforce
@@ -52,8 +54,8 @@ def test_kicksaw_salesforce_client(monkeypatch):
 
     execution_object = salesforce.get_execution_object()
 
-    assert (
-        execution_object[KicksawSalesforce.EXECUTION_PAYLOAD] == step_function_payload
+    assert execution_object[KicksawSalesforce.EXECUTION_PAYLOAD] == json.dumps(
+        step_function_payload
     )
 
     data = [
@@ -94,10 +96,12 @@ def test_kicksaw_salesforce_client(monkeypatch):
         )
         assert record[KicksawSalesforce.UPSERT_KEY] == "UpsertKey__c"
         assert record[KicksawSalesforce.UPSERT_KEY_VALUE] == "1a2b3c"
-        assert record[KicksawSalesforce.OBJECT_PAYLOAD] == {
-            "UpsertKey__c": "1a2b3c",
-            "Name": "Name 1",
-        }
+        assert record[KicksawSalesforce.OBJECT_PAYLOAD] == json.dumps(
+            {
+                "UpsertKey__c": "1a2b3c",
+                "Name": "Name 1",
+            }
+        )
 
         count += 1
 

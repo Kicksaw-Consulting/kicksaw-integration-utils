@@ -1,3 +1,5 @@
+import json
+
 from kicksaw_integration_utils.salesforce_client import (
     SfClient,
     SFBulkHandler as BaseSFBulkHandler,
@@ -39,7 +41,7 @@ class SFBulkType(BaseSFBulkType):
                         KicksawSalesforce.ERROR_MESSAGE: error["message"],
                         KicksawSalesforce.UPSERT_KEY: upsert_key,
                         KicksawSalesforce.UPSERT_KEY_VALUE: payload[upsert_key],
-                        KicksawSalesforce.OBJECT_PAYLOAD: payload,
+                        KicksawSalesforce.OBJECT_PAYLOAD: json.dumps(payload),
                     }
                     error_objects.append(error_object)
 
@@ -94,7 +96,7 @@ class KicksawSalesforce(SfClient):
         we also decide whether or not to create an execution object
         based on whether or not we've provided an id for this execution
         """
-        self.execution_payload = payload
+        self._execution_payload = payload
         super().__init__()
         self._prepare_execution(execution_object_id)
 
@@ -111,7 +113,9 @@ class KicksawSalesforce(SfClient):
         Adds the payload for the first step of the step function
         as a field on the execution object
         """
-        execution = {KicksawSalesforce.EXECUTION_PAYLOAD: self.execution_payload}
+        execution = {
+            KicksawSalesforce.EXECUTION_PAYLOAD: json.dumps(self._execution_payload)
+        }
         response = getattr(self, KicksawSalesforce.EXECUTION).create(execution)
         return response["id"]
 
