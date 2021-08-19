@@ -4,15 +4,11 @@ from tempfile import gettempdir
 TEMP = gettempdir()
 
 try:
-    from django.conf import settings
-
-    TEMP = settings.TEMP
+    from django.conf.settings import *
 except ModuleNotFoundError:
     pass
 
 try:
-    from chalicelib import settings
-
-    TEMP = settings.TEMP
+    from chalicelib.settings import *
 except ModuleNotFoundError:
     pass
