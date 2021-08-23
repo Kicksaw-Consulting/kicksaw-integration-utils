@@ -12,3 +12,8 @@ try:
     from chalicelib.settings import *
 except ModuleNotFoundError:
     pass
+
+try:
+    from config.settings import *
+except ModuleNotFoundError:
+    pass
