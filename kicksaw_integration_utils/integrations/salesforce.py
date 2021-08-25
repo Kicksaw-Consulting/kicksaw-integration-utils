@@ -40,7 +40,7 @@ class SFBulkType(BaseSFBulkType):
                         KicksawSalesforce.ERROR_CODE: error["statusCode"],
                         KicksawSalesforce.ERROR_MESSAGE: error["message"],
                         KicksawSalesforce.UPSERT_KEY: upsert_key,
-                        KicksawSalesforce.UPSERT_KEY_VALUE: payload[upsert_key],
+                        KicksawSalesforce.UPSERT_KEY_VALUE: payload.get(upsert_key, ""),
                         KicksawSalesforce.OBJECT_PAYLOAD: json.dumps(payload),
                     }
                     error_objects.append(error_object)
