@@ -1,5 +1,6 @@
 import datetime
 import itertools
+import time
 
 from typing import Iterable
 from pathlib import Path
@@ -63,3 +64,8 @@ def dedupe(elements: list, unique_prop: str) -> list:
         deduped_elements.append(element)
 
     return deduped_elements
+
+
+def unix_timestamp_in_future(hours: int):
+    epoch_now = int(time.time())
+    return epoch_now + (60 * 60 * hours)
