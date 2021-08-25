@@ -40,7 +40,8 @@ class SFBulkType(BaseSFBulkType):
                         KicksawSalesforce.ERROR_CODE: error["statusCode"],
                         KicksawSalesforce.ERROR_MESSAGE: error["message"],
                         KicksawSalesforce.UPSERT_KEY: upsert_key,
-                        KicksawSalesforce.UPSERT_KEY_VALUE: payload.get(upsert_key, ""),
+                        # TODO: Add test for bulk inserts where upsert key is None
+                        KicksawSalesforce.UPSERT_KEY_VALUE: payload.get(upsert_key),
                         KicksawSalesforce.OBJECT_PAYLOAD: json.dumps(payload),
                     }
                     error_objects.append(error_object)
