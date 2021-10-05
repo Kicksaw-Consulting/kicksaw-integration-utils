@@ -2,6 +2,7 @@ import json
 
 from types import SimpleNamespace
 
+from kicksaw_integration_utils import SalesforceClient
 from kicksaw_integration_utils.integrations.salesforce import KicksawSalesforce
 
 from simple_mockforce import mock_salesforce
@@ -15,11 +16,15 @@ mock_settings = SimpleNamespace(
     SFDC_DOMAIN="mock",
 )
 
+LAMBDA_NAME = "example-lambda"
 
-@mock_salesforce
+
+@mock_salesforce(fresh=True)
 def test_kicksaw_salesforce_client_instantiation(monkeypatch):
     monkeypatch.setattr(salesforce_client_module, "settings", mock_settings)
-    salesforce = KicksawSalesforce({})
+    _salesforce = SalesforceClient()
+    _salesforce.Integration__c.create({"Name": LAMBDA_NAME})
+    salesforce = KicksawSalesforce(LAMBDA_NAME, {})
 
     response = salesforce.query(f"Select Id From {KicksawSalesforce.EXECUTION}")
     assert response["totalSize"] == 1
@@ -31,7 +36,7 @@ def test_kicksaw_salesforce_client_instantiation(monkeypatch):
 
     # instantiating with an id means we don't create an execution object
     salesforce = KicksawSalesforce(
-        {}, execution_object_id=salesforce.execution_object_id
+        LAMBDA_NAME, {}, execution_object_id=salesforce.execution_object_id
     )
 
     # since we provided an id, the above instantiation should not have created another
@@ -45,15 +50,21 @@ def test_kicksaw_salesforce_client_instantiation(monkeypatch):
     assert record["Id"] == salesforce.execution_object_id
 
 
-@mock_salesforce
+@mock_salesforce(fresh=True)
 def test_kicksaw_salesforce_client(monkeypatch):
     monkeypatch.setattr(salesforce_client_module, "settings", mock_settings)
 
+    _salesforce = SalesforceClient()
+
+    integration__c = _salesforce.Integration__c.create({"Name": LAMBDA_NAME})
+    integration_id = integration__c["id"]
+
     step_function_payload = {"start_date": "2021-10-12"}
-    salesforce = KicksawSalesforce(step_function_payload)
+    salesforce = KicksawSalesforce(LAMBDA_NAME, step_function_payload)
 
     execution_object = salesforce.get_execution_object()
 
+    assert execution_object[KicksawSalesforce.INTEGRATION] == integration_id
     assert execution_object[KicksawSalesforce.EXECUTION_PAYLOAD] == json.dumps(
         step_function_payload
     )

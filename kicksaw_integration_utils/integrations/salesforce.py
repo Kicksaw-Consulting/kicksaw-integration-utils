@@ -77,9 +77,13 @@ class KicksawSalesforce(SfClient):
 
     execution_object_id = None
 
+    # Integration object
+    INTEGRATION = "Integration__c"
+
     # Integration execution object stuff
     EXECUTION = "IntegrationExecution__c"
     EXECUTION_PAYLOAD = "ExecutionPayload__c"  # json input for step function
+    EXECUTION_INTEGRATION = "Integration__c"
 
     # Integration error object stuff
     ERROR = "IntegrationError__c"
@@ -91,12 +95,15 @@ class KicksawSalesforce(SfClient):
     UPSERT_KEY_VALUE = "UpsertKeyValue__c"
     OBJECT_PAYLOAD = "ObjectPayload__c"
 
-    def __init__(self, payload, execution_object_id: str = None):
+    def __init__(
+        self, integration_name: str, payload: dict, execution_object_id: str = None
+    ):
         """
         In addition to instantiating the simple-salesforce client,
         we also decide whether or not to create an execution object
         based on whether or not we've provided an id for this execution
         """
+        self._integration_name = integration_name
         self._execution_payload = payload
         super().__init__()
         self._prepare_execution(execution_object_id)
@@ -114,8 +121,20 @@ class KicksawSalesforce(SfClient):
         Adds the payload for the first step of the step function
         as a field on the execution object
         """
+        results = self.query(
+            f"Select Id From {KicksawSalesforce.INTEGRATION} Where Name = '{self._integration_name}'"
+        )
+
+        assert (
+            results["totalSize"] == 1
+        ), f"No {KicksawSalesforce.INTEGRATION} named {self._integration_name}"
+
+        record = results["records"][0]
+        record_id = record["Id"]
+
         execution = {
-            KicksawSalesforce.EXECUTION_PAYLOAD: json.dumps(self._execution_payload)
+            KicksawSalesforce.EXECUTION_INTEGRATION: record_id,
+            KicksawSalesforce.EXECUTION_PAYLOAD: json.dumps(self._execution_payload),
         }
         response = getattr(self, KicksawSalesforce.EXECUTION).create(execution)
         return response["id"]
