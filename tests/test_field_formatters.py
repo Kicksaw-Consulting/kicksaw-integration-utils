@@ -1,6 +1,6 @@
 import pytest
 
-from kicksaw_integration_utils.field_formatters import format_date
+from kicksaw_integration_utils.field_formatters import convert_to_iso_date
 
 
 @pytest.mark.parametrize(
@@ -19,5 +19,5 @@ from kicksaw_integration_utils.field_formatters import format_date
     ],
 )
 def test_format_date(date_string, expected_date):
-    result = format_date(date_string)
+    result = convert_to_iso_date(date_string)
     assert result == expected_date
