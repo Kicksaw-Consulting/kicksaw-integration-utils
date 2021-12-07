@@ -1,4 +1,7 @@
+import os
+
 from pathlib import Path
+from tempfile import gettempdir
 
 from kicksaw_integration_utils.csv_helpers import create_error_report
 from kicksaw_integration_utils.s3_helpers import (
@@ -8,7 +11,6 @@ from kicksaw_integration_utils.s3_helpers import (
     move_file,
 )
 from kicksaw_integration_utils.salesforce_client import SfClient
-from kicksaw_integration_utils import settings
 from kicksaw_integration_utils.sfdc_helpers import parse_bulk_upsert_results
 from kicksaw_integration_utils.utils import get_iso
 
@@ -68,7 +70,9 @@ class Orchestrator:
                 f"error-report-{self.get_timestamp()}.csv"
             )
         self.error_report_path = (
-            Path(settings.TEMP) / self.error_folder / self.error_report_file_name
+            Path(os.getenv("TEMP", gettempdir()))
+            / self.error_folder
+            / self.error_report_file_name
         )
 
     def download_s3_file(self):
