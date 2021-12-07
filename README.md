@@ -52,7 +52,7 @@ class Orchestrator(BaseOrchestrator):
 
     @property
     def error_report_link(self):
-        return f"https://{self.bucket_name}.{settings.AWS_REGION}.amazonaws.com/{self.error_file_s3_key}"
+        return f"https://{self.bucket_name}.{config.AWS_REGION}.amazonaws.com/{self.error_file_s3_key}"
 ```
 
 ## Using the Orchestrator
@@ -65,7 +65,7 @@ from kicksaw_integration_utils.classes import SfClient
 from .orchestrator import Orchestrator
 
 salesforce = SfClient()
-orchestrator = Orchestrator("some/s3/key/file.csv", settings.S3_BUCKET, sf_client=salesforce)
+orchestrator = Orchestrator("some/s3/key/file.csv", config.S3_BUCKET, sf_client=salesforce)
 
 upsert_key = "My_External_ID__c"
 accounts_data = [{"Name": "A name", upsert_key: "123"}]
