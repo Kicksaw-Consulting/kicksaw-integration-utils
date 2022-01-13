@@ -49,7 +49,7 @@ def move_file(
     old_key: str, new_key: str, bucket: str, new_bucket: str = None, delete: bool = True
 ):
     """
-    Move a file within an S3 bucket by copying to a different path and deleting the original
+    Move a file within an S3 bucket by copying to a different path and delete the original
     """
     s3_client = boto3.client("s3")
     copy_source = {"Bucket": bucket, "Key": old_key}
