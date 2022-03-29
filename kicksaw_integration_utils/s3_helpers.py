@@ -143,3 +143,23 @@ def get_filename_from_s3_key(s3_key: str):
 
 def get_prefix_from_s3_key(s3_key: str):
     return os.path.dirname(s3_key)
+
+
+def build_archive_s3_key(s3_key: str, replace: bool = False):
+    """
+    Given a key, build an archive key
+
+    When replace is True, that means we want to replace the prefix with the word "archive"
+    When False, we want to prepend the word "archive"
+    """
+    s3_key_prefix = get_prefix_from_s3_key(s3_key)
+    s3_key_filename = get_filename_from_s3_key(s3_key)
+
+    parts = s3_key_prefix.split("/")
+    if replace:
+        parts = ["archive"]
+    else:
+        parts.insert(0, "archive")
+    archive_prefix = "/".join(parts)
+    archive_path = Path(archive_prefix) / s3_key_filename
+    return archive_path.as_posix()

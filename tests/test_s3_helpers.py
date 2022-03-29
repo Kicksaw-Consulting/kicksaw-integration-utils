@@ -18,6 +18,7 @@ from kicksaw_integration_utils.s3_helpers import (
     download_file,
     get_filename_from_s3_key,
     parse_s3_event_record,
+    build_archive_s3_key,
 )
 
 
@@ -187,3 +188,15 @@ def test_get_filename_from_s3_key(s3_key, expected):
 def test_get_prefix_from_s3_key(s3_key, expected):
     prefix = get_prefix_from_s3_key(s3_key)
     assert prefix == expected
+
+
+@pytest.mark.parametrize(
+    "s3_key,replace,expected",
+    [
+        ("origin/a_file.csv", True, "archive/a_file.csv"),
+        ("a/b/c/file.csv", False, "archive/a/b/c/file.csv"),
+    ],
+)
+def test_build_archive_s3_key(s3_key, replace, expected):
+    archive_s3_key = build_archive_s3_key(s3_key, replace=replace)
+    assert archive_s3_key == expected
