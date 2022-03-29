@@ -110,6 +110,18 @@ def timestamp_s3_key(
     return timestamped_s3_key
 
 
+def parse_s3_event_record(record: dict):
+    """
+    Returns the bucket name and s3 key associated with an s3 event record
+    """
+    s3_data = record["s3"]
+    bucket = s3_data["bucket"]
+    bucket_name = unquote_plus(bucket["name"])
+    s3_object = s3_data["object"]
+    s3_object_key = unquote_plus(s3_object["key"])
+    return bucket_name, s3_object_key
+
+
 def respond_to_s3_event(event, callback, *args, **kwargs):
     """
     Use like this:
@@ -121,11 +133,7 @@ def respond_to_s3_event(event, callback, *args, **kwargs):
     """
     records = event["Records"]
     for record in records:
-        s3_data = record["s3"]
-        bucket = s3_data["bucket"]
-        bucket_name = unquote_plus(bucket["name"])
-        s3_object = s3_data["object"]
-        s3_object_key = unquote_plus(s3_object["key"])
+        bucket_name, s3_object_key = parse_s3_event_record(record)
         callback(s3_object_key, bucket_name, *args, **kwargs)
 
 

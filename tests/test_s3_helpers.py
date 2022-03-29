@@ -17,6 +17,7 @@ from kicksaw_integration_utils.s3_helpers import (
     upload_file,
     download_file,
     get_filename_from_s3_key,
+    parse_s3_event_record,
 )
 
 
@@ -99,6 +100,37 @@ def test_move_file_to_another_bucket():
 def test_timestamp_s3_key(s3_key, keep_folder, expected):
     timestamped_s3_key = timestamp_s3_key(s3_key, keep_folder)
     assert timestamped_s3_key == expected
+
+
+@pytest.mark.parametrize(
+    "record, expected_bucket, expected_key",
+    [
+        (
+            {
+                "s3": {
+                    "bucket": {"name": "bucket"},
+                    "object": {"key": "origin/a_file.csv"},
+                },
+            },
+            "bucket",
+            "origin/a_file.csv",
+        ),
+        (
+            {
+                "s3": {
+                    "bucket": {"name": "bucket"},
+                    "object": {"key": "Im+a+problem.csv"},
+                },
+            },
+            "bucket",
+            "Im a problem.csv",
+        ),
+    ],
+)
+def test_parse_s3_event_record(record, expected_bucket, expected_key):
+    bucket_name, s3_key = parse_s3_event_record(record)
+    assert expected_bucket == bucket_name
+    assert expected_key == s3_key
 
 
 @pytest.mark.parametrize(
