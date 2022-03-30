@@ -11,6 +11,7 @@ from moto import mock_s3
 from kicksaw_integration_utils.utils import get_iso
 from kicksaw_integration_utils.s3_helpers import (
     get_prefix_from_s3_key,
+    parse_kinesis_record,
     timestamp_s3_key,
     respond_to_s3_event,
     move_file,
@@ -163,6 +164,24 @@ def test_respond_to_s3_event(s3_key, expected_s3_key, bucket, expected_bucket):
         ]
     }
     respond_to_s3_event(event, process)
+
+
+@pytest.mark.parametrize(
+    "record,expected",
+    [
+        (
+            {
+                "kinesis": {
+                    "data": "eyJOYW1lIjogIkJvYiIsICJVbmlxdWVJZF9fYyI6ICIxMjMifQ==",
+                },
+            },
+            {"Name": "Bob", "UniqueId__c": "123"},
+        ),
+    ],
+)
+def test_parse_kinesis_record(record, expected):
+    data = parse_kinesis_record(record)
+    assert expected == data
 
 
 @pytest.mark.parametrize(

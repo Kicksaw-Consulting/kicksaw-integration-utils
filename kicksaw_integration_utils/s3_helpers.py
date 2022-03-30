@@ -1,4 +1,6 @@
+import base64
 import boto3
+import json
 import os
 
 from pathlib import Path
@@ -135,6 +137,15 @@ def respond_to_s3_event(event, callback, *args, **kwargs):
     for record in records:
         bucket_name, s3_object_key = parse_s3_event_record(record)
         callback(s3_object_key, bucket_name, *args, **kwargs)
+
+
+def parse_kinesis_record(record: dict):
+    """
+    Returns the decoded data from the kinesis record
+    """
+    decoded_data = base64.b64decode(record["kinesis"]["data"]).decode("utf-8")
+    data = json.loads(decoded_data)
+    return data
 
 
 def get_filename_from_s3_key(s3_key: str):
