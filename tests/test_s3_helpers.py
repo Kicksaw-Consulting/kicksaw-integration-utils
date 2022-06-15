@@ -210,12 +210,15 @@ def test_get_prefix_from_s3_key(s3_key, expected):
 
 
 @pytest.mark.parametrize(
-    "s3_key,replace,expected",
+    "s3_key,nested_prefix,replace,expected",
     [
-        ("origin/a_file.csv", True, "archive/a_file.csv"),
-        ("a/b/c/file.csv", False, "archive/a/b/c/file.csv"),
+        ("origin/a_file.csv", None, True, "archive/a_file.csv"),
+        ("a/b/c/file.csv", None, False, "archive/a/b/c/file.csv"),
+        ("a/b/c/file.csv", Path("d"), False, "archive/a/b/c/d/file.csv"),
     ],
 )
-def test_build_archive_s3_key(s3_key, replace, expected):
-    archive_s3_key = build_archive_s3_key(s3_key, replace=replace)
+def test_build_archive_s3_key(s3_key, nested_prefix, replace, expected):
+    archive_s3_key = build_archive_s3_key(
+        s3_key, nested_prefix=nested_prefix, replace=replace
+    )
     assert archive_s3_key == expected

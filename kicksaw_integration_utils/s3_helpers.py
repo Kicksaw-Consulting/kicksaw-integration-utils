@@ -156,7 +156,9 @@ def get_prefix_from_s3_key(s3_key: str):
     return os.path.dirname(s3_key)
 
 
-def build_archive_s3_key(s3_key: str, replace: bool = False):
+def build_archive_s3_key(
+    s3_key: str, nested_prefix: Path = None, replace: bool = False
+):
     """
     Given a key, build an archive key
 
@@ -172,5 +174,10 @@ def build_archive_s3_key(s3_key: str, replace: bool = False):
     else:
         parts.insert(0, "archive")
     archive_prefix = "/".join(parts)
-    archive_path = Path(archive_prefix) / s3_key_filename
+
+    if not nested_prefix:
+        archive_path = Path(archive_prefix) / s3_key_filename
+    else:
+        archive_path = Path(archive_prefix) / nested_prefix / s3_key_filename
+
     return archive_path.as_posix()
