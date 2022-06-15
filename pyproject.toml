@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kicksaw-integration-utils"
-version = "2.0.4"
+version = "2.0.5"
 description = "A set of helper functions for CSV to Salesforce procedures, with reporting in AWS S3"
 readme = "README.md"
 repository = "https://github.com/Kicksaw-Consulting/kicksaw-integration-utils"
