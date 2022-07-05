@@ -1,4 +1,5 @@
 import boto3
+import datetime
 import os
 import pytest
 
@@ -20,6 +21,7 @@ from kicksaw_integration_utils.s3_helpers import (
     get_filename_from_s3_key,
     parse_s3_event_record,
     build_archive_s3_key,
+    build_date_divided_s3_prefix,
 )
 
 
@@ -222,3 +224,15 @@ def test_build_archive_s3_key(s3_key, nested_prefix, replace, expected):
         s3_key, nested_prefix=nested_prefix, replace=replace
     )
     assert archive_s3_key == expected
+
+
+@pytest.mark.parametrize(
+    "date,expected",
+    [
+        (datetime.date(2022, 7, 5), "2022/07/05"),
+        (datetime.date(2022, 12, 15), "2022/12/15"),
+    ],
+)
+def test_build_date_divided_s3_prefix(date, expected):
+    prefix = build_date_divided_s3_prefix(date)
+    assert prefix.as_posix() == expected

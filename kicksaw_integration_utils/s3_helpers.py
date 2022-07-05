@@ -1,5 +1,6 @@
 import base64
 import boto3
+import datetime
 import json
 import os
 
@@ -181,3 +182,21 @@ def build_archive_s3_key(
         archive_path = Path(archive_prefix) / nested_prefix / s3_key_filename
 
     return archive_path.as_posix()
+
+
+def build_date_divided_s3_prefix(date: datetime.date) -> Path:
+    """
+    Builds and s3 prefix with the given date where each element of the date is an individual prefix
+
+    e.g., 2022-07-05 -> 2022/07/05 (as Path object)
+    """
+    year = str(date.year)
+    if date.month < 10:
+        month = f"0{date.month}"
+    else:
+        month = str(date.month)
+    if date.day < 10:
+        day = f"0{date.day}"
+    else:
+        day = str(date.day)
+    return Path(year) / month / day
