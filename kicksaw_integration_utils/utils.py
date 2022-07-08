@@ -2,8 +2,9 @@ import datetime
 import itertools
 import time
 
-from typing import Iterable
 from pathlib import Path
+from typing import Iterable
+from urllib.parse import urlparse
 
 
 def get_iso() -> str:
@@ -69,3 +70,27 @@ def dedupe(elements: list, unique_prop: str) -> list:
 def unix_timestamp_in_future(hours: int):
     epoch_now = int(time.time())
     return epoch_now + (60 * 60 * hours)
+
+
+def extract_domain(url: str, remove_subdomains: bool = False, remove_www: bool = True):
+    """
+    Extracts a clean, top-level domain from a url
+    """
+    if remove_www:
+        url = url.replace("www.", "")
+
+    parsed = urlparse(url).netloc
+    if parsed == "":
+        return None
+
+    if url.startswith(".") or url.endswith("."):
+        return None
+
+    if "." not in url:
+        return None
+
+    if not remove_subdomains:
+        return parsed
+
+    # clean out subdomains
+    return ".".join(parsed.split(".")[-2:])
