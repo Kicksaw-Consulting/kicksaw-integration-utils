@@ -6,15 +6,15 @@ from simple_salesforce.bulk import (
     SFBulkHandler as BaseSFBulkHandler,
     SFBulkType as BaseSFBulkType,
 )
-from simple_salesforce.exceptions import SalesforceMalformedRequest
+from simple_salesforce.exceptions import (
+    SalesforceAuthenticationFailed,
+    SalesforceMalformedRequest,
+)
 
 
 class SFBulkType(BaseSFBulkType):
     def __init__(self, object_name, bulk_url, headers, session):
         super().__init__(object_name, bulk_url, headers, session)
-
-        self.attempts = 0
-        self.max_attempts = 5
 
     def _bulk_operation(
         self,
@@ -79,7 +79,19 @@ class SfClient(Salesforce):
         if domain and domain.lower() != "na":
             config["domain"] = domain
 
-        super().__init__(**config)
+        login_attempts = 0
+        max_login_attempts = 5
+
+        while login_attempts < max_login_attempts:
+            try:
+                super().__init__(**config)
+                break
+            except SalesforceAuthenticationFailed as reason:
+                login_attempts += 1
+                if reason.code == "SERVER_UNAVAILABLE":
+                    time.sleep(2 ** login_attempts)
+                    continue
+                raise reason
 
     def __getattr__(self, name):
         """
