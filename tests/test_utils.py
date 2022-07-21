@@ -55,24 +55,38 @@ def test_dedupe(data, key, deduped_data):
 
 
 @pytest.mark.parametrize(
-    "url,domain,remove_subdomains",
+    "url,domain,remove_subdomains,remove_www",
     [
-        ("https://www.google.com/", "google.com", False),
+        ("https://www.google.com/", "google.com", False, True),
         (
             "https://www.amazon.com/s?k=gaming+keyboard&pd_rd_r=7d0a067b-c9ff-4815-ac9a-692a459d37c2&pd_rd_w=oxSxd&pd_rd_wg=3eEqP&pf_rd_p=12129333-2117-4490-9c17-6d31baf0582a&pf_rd_r=H9BERTBPN8CZYP2GEADE&ref=pd_gw_unk",
             "amazon.com",
             False,
+            True,
         ),
-        ("https://github.com/python-poetry/poetry/issues/1763", "github.com", False),
+        (
+            "https://github.com/python-poetry/poetry/issues/1763",
+            "github.com",
+            False,
+            True,
+        ),
         (
             "https://blog.sifdata.com/10-best-ways-increase-sales-effectiveness-complete-guide/",
             "sifdata.com",
             True,
+            True,
         ),
-        ("https://codepen.io", "codepen.io", False),
-        ("https://io", None, False),
-        ("http://a.io/what", "a.io", True),
+        ("https://codepen.io", "codepen.io", False, True),
+        ("https://io", None, False, True),
+        ("http://a.io/what", "a.io", True, True),
+        (None, None, True, True),
+        (None, None, False, True),
+        (None, None, False, False),
+        (None, None, True, False),
     ],
 )
-def test_extract_domain(url, domain, remove_subdomains):
-    assert extract_domain(url, remove_subdomains=remove_subdomains) == domain
+def test_extract_domain(url, domain, remove_subdomains, remove_www):
+    assert (
+        extract_domain(url, remove_subdomains=remove_subdomains, remove_www=remove_www)
+        == domain
+    )
