@@ -1,3 +1,6 @@
+import requests
+import time
+
 from simple_salesforce import Salesforce
 from simple_salesforce.bulk import (
     SFBulkHandler as BaseSFBulkHandler,
@@ -7,6 +10,12 @@ from simple_salesforce.exceptions import SalesforceMalformedRequest
 
 
 class SFBulkType(BaseSFBulkType):
+    def __init__(self, object_name, bulk_url, headers, session):
+        super().__init__(object_name, bulk_url, headers, session)
+
+        self.attempts = 0
+        self.max_attempts = 5
+
     def _bulk_operation(
         self,
         *args,
@@ -32,6 +41,17 @@ class SFBulkType(BaseSFBulkType):
                     **kwargs,
                 )
             raise exception
+
+    def _get_batch_results(self, job_id, batch_id, operation):
+        try:
+            batch_result = super()._get_batch_results(job_id, batch_id, operation)
+        except requests.ConnectionError as reason:
+            if self.attempts < self.max_attempts:
+                self.attempts += 1
+                time.sleep(2 ** self.attempts)
+                return self._get_batch_results(job_id, batch_id, operation)
+            raise reason
+        return batch_result
 
 
 class SFBulkHandler(BaseSFBulkHandler):
