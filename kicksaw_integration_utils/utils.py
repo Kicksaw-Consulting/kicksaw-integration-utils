@@ -76,6 +76,9 @@ def extract_domain(url: str, remove_subdomains: bool = False, remove_www: bool =
     """
     Extracts a clean, top-level domain from a url
     """
+    if url is None:
+        return None
+
     if remove_www:
         url = url.replace("www.", "")
 
