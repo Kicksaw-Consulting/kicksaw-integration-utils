@@ -14,6 +14,9 @@ from simple_salesforce.exceptions import (
 
 class SFBulkType(BaseSFBulkType):
     def __init__(self, object_name, bulk_url, headers, session):
+        # used for backoff logic on Connection interrupts
+        self.attempts = 0
+        self.max_attempts = 5
         super().__init__(object_name, bulk_url, headers, session)
 
     def _bulk_operation(
@@ -52,6 +55,17 @@ class SFBulkType(BaseSFBulkType):
                 return self._get_batch_results(job_id, batch_id, operation)
             raise reason
         return batch_result
+
+    def _add_batch(self, job_id, data, operation):
+        try:
+            result = super()._add_batch(job_id, data, operation)
+        except requests.ConnectionError as reason:
+            if self.attempts < self.max_attempts:
+                self.attempts += 1
+                time.sleep(2 ** self.attempts)
+                return self._add_batch(job_id, data, operation)
+            raise reason
+        return result
 
 
 class SFBulkHandler(BaseSFBulkHandler):
