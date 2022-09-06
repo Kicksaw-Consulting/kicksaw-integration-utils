@@ -80,3 +80,4 @@ verify_*.txt
 app/.serverless
 app/static
 .devcontainer
+.coverage
