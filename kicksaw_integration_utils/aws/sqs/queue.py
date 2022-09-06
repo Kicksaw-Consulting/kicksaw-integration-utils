@@ -38,7 +38,12 @@ class SQSQueue(Generic[PydanticModel]):
 
     """
 
-    def __init__(self, url: str, message_model: type[PydanticModel]) -> None:
+    def __init__(
+        self,
+        url: str,
+        message_model: type[PydanticModel],
+        **kwargs,
+    ) -> None:
         """
         Initialize the SQS queue.
 
@@ -49,9 +54,12 @@ class SQSQueue(Generic[PydanticModel]):
         message_model : pydantic.BaseModel
             Pydantic model used to de/serialize messages received/sent
             from/to the queue.
+        **kwargs
+            Additional keyword arguments passed to boto3.resource("sqs", **kwargs)
+            For example, region_name.
 
         """
-        self._sqs = boto3.resource("sqs")
+        self._sqs = boto3.resource("sqs", **kwargs)
         self._queue = self._sqs.Queue(url)
         self._message_model = message_model
         logger.debug("Successfully connected to SQS queue %s", self.url)
@@ -62,6 +70,7 @@ class SQSQueue(Generic[PydanticModel]):
         name: str,
         message_model: type[PydanticModel],
         account_id: Optional[str] = None,
+        **kwargs,
     ) -> SQSQueue:
         """
         Initialize queue using its name.
@@ -75,18 +84,21 @@ class SQSQueue(Generic[PydanticModel]):
         account_id : str, optional
             AWS account ID of the account that created the queue.
             If not provided, uses account ID from the local AWS credentials.
+        **kwargs
+            Additional keyword arguments passed to boto3.resource("sqs", **kwargs)
+            For example, region_name.
 
         Returns
         -------
         SQSQueue
             _description_
         """
-        kwargs = {"QueueName": name}
+        queue_kwargs = {"QueueName": name}
         if account_id is not None:
-            kwargs["QueueOwnerAWSAccountId"] = account_id
-        sqs = boto3.resource("sqs")
-        queue = sqs.get_queue_by_name(**kwargs)
-        return cls(url=queue.url, message_model=message_model)
+            queue_kwargs["QueueOwnerAWSAccountId"] = account_id
+        sqs = boto3.resource("sqs", **kwargs)
+        queue = sqs.get_queue_by_name(**queue_kwargs)
+        return cls(url=queue.url, message_model=message_model, **kwargs)
 
     @property
     def url(self) -> str:

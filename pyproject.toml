@@ -60,3 +60,16 @@ addopts = "-v --cov=kicksaw_integration_utils --cov-report=term --cov-report=xml
 testpaths = [
     "tests",
 ]
+
+[tool.coverage.report]
+exclude_lines = [
+    'pragma: no cover',
+    'raise AssertionError',
+    'raise NotImplementedError',
+    'if __name__ == .__main__.:',
+    'def __repr__',
+    'assert',
+]
+precision = 1
+skip_empty = true
+sort = "-Cover"
