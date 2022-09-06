@@ -56,7 +56,7 @@ disable = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "-v --cov=kicksaw_integration_utils --cov-report=term"
+addopts = "-v --cov=kicksaw_integration_utils --cov-report=term --cov-report=xml --cov-report=html"
 testpaths = [
     "tests",
 ]

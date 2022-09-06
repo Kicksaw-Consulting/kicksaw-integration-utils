@@ -81,3 +81,5 @@ app/.serverless
 app/static
 .devcontainer
 .coverage
+htmlcov
+coverage.xml
