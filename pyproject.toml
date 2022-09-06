@@ -32,6 +32,9 @@ flake8 = "^5.0.4"
 pylint = "^2.15.0"
 mypy = "^0.971"
 
+[tool.poetry.group.typing.dependencies]
+boto3-stubs = {extras = ["essential"], version = "^1.24.66"}
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
@@ -43,6 +46,14 @@ lines_between_types = 1
 [tool.pylint.'MASTER']
 fail-under = 8.0
 extension-pkg-allow-list = "pydantic"
+
+[tool.pylint.'MESSAGES CONTROL']
+disable = [
+    "missing-module-docstring",
+    "missing-class-docstring",
+    "too-few-public-methods",
+    "useless-super-delegation",
+]
 
 [tool.pytest.ini_options]
 addopts = "-v --cov=kicksaw_integration_utils --cov-report=term"
