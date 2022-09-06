@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from typing import Generic, Optional, Type, TypeVar
+from typing import Generic, List, Optional, Type, TypeVar
 
 import boto3
 
@@ -25,7 +25,7 @@ class SQSQueue(Generic[PydanticModel]):
     _queue : SQS.Queue
         boto3 SQS queue instance.
         https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sqs.html#queue
-    _message_model : type[pydantic.BaseModel]
+    _message_model : Type[pydantic.BaseModel]
         Pydantic model used to de/serialize messages received/sent from/to the queue.
 
     Methods
@@ -79,7 +79,7 @@ class SQSQueue(Generic[PydanticModel]):
         ----------
         name : str
             _description_
-        message_model : type[PydanticModel]
+        message_model : Type[PydanticModel]
             _description_
         account_id : str, optional
             AWS account ID of the account that created the queue.
@@ -140,18 +140,18 @@ class SQSQueue(Generic[PydanticModel]):
         )
         return message_id
 
-    def send_messages(self, messages: list[PydanticModel]) -> list[bool]:
+    def send_messages(self, messages: List[PydanticModel]) -> List[bool]:
         """
         Send multiple messages to the queue.
 
         Parameters
         ----------
-        messages : list[pydantic.BaseModel]
+        messages : List[pydantic.BaseModel]
             List of messages.
 
         Returns
         -------
-        list[bool]
+        List[bool]
             List of results (True for success, False for failure).
 
         Raises
@@ -166,7 +166,7 @@ class SQSQueue(Generic[PydanticModel]):
             self.name,
         )
 
-        results: list[bool] = []
+        results: List[bool] = []
         for i in range(0, len(messages), 10):
             batch = messages[i : i + 10]
             logger.debug(
@@ -216,7 +216,7 @@ class SQSQueue(Generic[PydanticModel]):
         max_messages: int = 10_000,
         wait_time_seconds: int = 0,
         max_poll_attempts: int = 0,
-    ) -> tuple[list[str], list[PydanticModel]]:
+    ) -> tuple[List[str], List[PydanticModel]]:
         """
         Receive messages from the queue.
 
@@ -245,15 +245,15 @@ class SQSQueue(Generic[PydanticModel]):
 
         Returns
         -------
-        handles : list[str]
+        handles : List[str]
             List of message handles. Used later to remove the messages from the queue.
-        messages : list[pydantic.BaseModel]
+        messages : List[pydantic.BaseModel]
             List of messages serialized to the provided pydantic model.
 
         """
         poll_attempts: int = 0
-        handles: list[str] = []
-        messages: list[PydanticModel] = []
+        handles: List[str] = []
+        messages: List[PydanticModel] = []
         while len(messages) < max_messages:
             # TODO- handle SQS.Client.exceptions.OverLimit
             response = self._queue.receive_messages(
@@ -273,19 +273,19 @@ class SQSQueue(Generic[PydanticModel]):
 
         return handles, messages
 
-    def delete_messages(self, handles: list[str]) -> list[bool]:
+    def delete_messages(self, handles: List[str]) -> List[bool]:
         """
         Delete messages from the queue using their handles.
 
         Parameters
         ----------
-        handles : list[str]
+        handles : List[str]
             Message handles.
             See .receive_messages method.
 
         Returns
         -------
-        list[bool]
+        List[bool]
             List of deletion results (True for success, False for failure).
 
         Raises
@@ -301,7 +301,7 @@ class SQSQueue(Generic[PydanticModel]):
             self.name,
         )
 
-        results: list[bool] = []
+        results: List[bool] = []
         for i in range(0, len(handles), 10):
             batch = handles[i : i + 10]
             logger.debug(

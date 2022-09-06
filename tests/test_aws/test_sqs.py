@@ -1,3 +1,5 @@
+from typing import List
+
 import boto3
 import pytest
 
@@ -26,7 +28,7 @@ def queue():
         yield SQSQueue.from_name(queue_name, Message, region_name="us-east-1")
 
 
-def test_multiple_messages(queue: SQSQueue, messages: list[BaseModel]):
+def test_multiple_messages(queue: SQSQueue, messages: List[BaseModel]):
     # Send messages
     send_results = queue.send_messages(messages)
     assert all(send_results)
