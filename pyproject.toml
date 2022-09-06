@@ -5,7 +5,7 @@ description = "A set of helper functions for CSV to Salesforce procedures, with 
 readme = "README.md"
 repository = "https://github.com/Kicksaw-Consulting/kicksaw-integration-utils"
 authors = [
-    "Alex Drozd <drozdster@gmail.com>",
+    "Alex Drozd <alex@kicksaw.com>",
     "Tim Sabat <tim@kicksaw.com>",
     "George Bocharov <george@kicksaw.com>"
 ]
