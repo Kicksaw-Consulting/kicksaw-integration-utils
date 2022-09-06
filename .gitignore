@@ -79,3 +79,4 @@ verify_*.txt
 .now
 app/.serverless
 app/static
+.devcontainer
