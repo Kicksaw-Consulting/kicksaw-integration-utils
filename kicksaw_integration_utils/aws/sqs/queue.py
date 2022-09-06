@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from typing import Generic, Optional, TypeVar
+from typing import Generic, Optional, Type, TypeVar
 
 import boto3
 
@@ -41,7 +41,7 @@ class SQSQueue(Generic[PydanticModel]):
     def __init__(
         self,
         url: str,
-        message_model: type[PydanticModel],
+        message_model: Type[PydanticModel],
         **kwargs,
     ) -> None:
         """
@@ -68,7 +68,7 @@ class SQSQueue(Generic[PydanticModel]):
     def from_name(
         cls,
         name: str,
-        message_model: type[PydanticModel],
+        message_model: Type[PydanticModel],
         account_id: Optional[str] = None,
         **kwargs,
     ) -> SQSQueue:
