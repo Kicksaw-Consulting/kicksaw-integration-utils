@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import warnings
 
 from typing import Generic, List, Optional, Type, TypeVar
 
@@ -251,6 +252,18 @@ class SQSQueue(Generic[PydanticModel]):
             List of messages serialized to the provided pydantic model.
 
         """
+        if max_poll_attempts > max_messages:
+            warnings.warn(
+                " ".join(
+                    [
+                        f"max_poll_attempts={max_poll_attempts:,d} shouldn't exceed",
+                        f"max_messages={max_messages:,d} and was automatically fixed",
+                    ]
+                ),
+                UserWarning,
+            )
+            max_poll_attempts = max_messages
+
         poll_attempts: int = 0
         handles: List[str] = []
         messages: List[PydanticModel] = []
@@ -265,10 +278,19 @@ class SQSQueue(Generic[PydanticModel]):
                 handles.append(message.receipt_handle)
                 messages.append(self._message_model.parse_raw(message.body))
 
+            if len(response) == 0:
+                logger.debug("%s has no messages left", self.name)
+                break
             if len(response) < 10:
                 poll_attempts += 1
                 if poll_attempts >= max_poll_attempts:
-                    logger.debug("%s has no messages left", self.name)
+                    logger.debug(
+                        (
+                            "%s may still have messages, "
+                            "but max_poll_attempts were exceeded"
+                        ),
+                        self.name,
+                    )
                     break
 
         return handles, messages

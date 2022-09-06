@@ -54,3 +54,12 @@ def test_send_single_message(queue: SQSQueue):
 
     handles, received_messages = queue.receive_messages()
     assert len(handles) == len(received_messages) == 1
+
+
+def test_warn_max_poll_attempts(queue: SQSQueue, messages: List[BaseModel]):
+    queue.send_messages(messages)
+    with pytest.warns(
+        UserWarning,
+        match=r"max_poll_attempts.+shouldn't exceed.+max_messages",
+    ):
+        queue.receive_messages(max_messages=10_000, max_poll_attempts=100_000)
