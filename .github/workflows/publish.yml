@@ -1,24 +1,27 @@
 name: publish
 on:
-  push:
-    tags:
-      - "v*"
+  release:
+    types:
+      - "created"
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment:
+      name: prod
+      url: https://pypi.org/project/kicksaw-integration-utils
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.10"
       - name: Cache poetry installation
         id: cache-poetry
         uses: actions/cache@v3
         with:
-          key: poetry-${{ hashFiles('poetry.lock') }}-py${{ matrix.python-version }}
+          key: poetry-${{ hashFiles('poetry.lock') }}-py3.10
           path: |
             ~/.local/bin/poetry
             ~/.local/share/pypoetry
@@ -31,8 +34,4 @@ jobs:
           export PATH="~/.local/share/pypoetry/bin:$PATH"
           poetry install
       - name: Publish
-        env:
-          PYPI_USER: ${{ secrets.PYPI_USER }}
-          PYPI_PASS: ${{ secrets.PYPI_PASS }}
-        run: |
-          poetry publish --build --username $PYPI_USER --password $PYPI_PASS
+        run: poetry publish --build --username __token__ --password ${{ secrets.PYPI_TOKEN }}
