@@ -5,26 +5,42 @@ on:
     branches:
       - main
 
+env:
+  PYTHON_VERSION: "3.10"
+
 jobs:
   test:
-    runs-on: ubuntu-18.04
+    name: Test with python-${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Setup python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.8
-      - name: Run image
-        uses: abatilo/actions-poetry@v2.0.0
+          python-version: ${{ matrix.python-version }}
+      - name: Cache poetry installation
+        id: cache-poetry
+        uses: actions/cache@v3
         with:
-          poetry-version: 1.1.4
-      - name: Install dependencies
+          key: poetry-${{ hashFiles('poetry.lock') }}-py${{ matrix.python-version }}
+          path: |
+            ~/.local/bin/poetry
+            ~/.local/share/pypoetry
+            ~/.cache/pypoetry
+      - name: Install poetry
+        if: ${{ steps.cache-poetry.outputs.cache-hit != 'true' }}
+        run: curl -sSL https://install.python-poetry.org | python3 -
+      - name: Install project and its dependencies
         run: |
+          export PATH="~/.local/share/pypoetry/bin:$PATH"
           poetry install
-      - name: Pytest
-        run: |
-          poetry run pytest
+      - name: Run tests
+        run: poetry run pytest --cov-report=xml:coverage.xml
       - name: Slack Notifications
         uses: Kicksaw-Consulting/notify-slack-action@master
         if: always()
@@ -33,3 +49,36 @@ jobs:
           notify_when: "failure"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  deploy-test-pypi:
+    name: Deploy to TestPyPI
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main' }}
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: test
+      url: https://test.pypi.org/project/kicksaw-integration-utils
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Cache poetry installation
+        id: cache-poetry
+        uses: actions/cache@v3
+        with:
+          key: poetry-${{ hashFiles('poetry.lock') }}-py${{ env.PYTHON_VERSION }}
+          path: |
+            ~/.local/bin/poetry
+            ~/.local/share/pypoetry
+            ~/.cache/pypoetry
+      - name: Install poetry
+        if: ${{ steps.cache-poetry.outputs.cache-hit != 'true' }}
+        run: curl -sSL https://install.python-poetry.org | python3 -
+      - name: Install project and its dependencies
+        run: poetry install
+      - name: Publish to TestPyPI
+        run: |
+          poetry config repositories.test-pypi https://test.pypi.org/legacy/
+          poetry publish --build --repository test-pypi --username __token__ --password ${{ secrets.PYPI_TOKEN }} --skip-existing
