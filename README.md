@@ -1,3 +1,53 @@
+- [API Reference](#api-reference)
+  - [AWS](#aws)
+    - [SQS](#sqs)
+- [Overview](#overview)
+- [High-level Example](#high-level-example)
+  - [Inheriting the Orchestrator](#inheriting-the-orchestrator)
+  - [Using the Orchestrator](#using-the-orchestrator)
+- [Low-level Example](#low-level-example)
+
+# API Reference
+
+## AWS
+
+Helper classes and functions to interact with and manipulate AWS services.
+
+### SQS
+
+Make sure to provide type hint `SQSQueue[Patient]` to enable type hints for the queue
+methods.
+
+Send messages:
+
+```python
+from kicksaw_integration_utils.aws import SQSQueue
+from pydantic import BaseModel
+
+
+class Patient(BaseModel):
+    first_name: str
+    last_name: str
+    age: int
+
+
+messages = [
+    Patient(first_name="John", last_name="Doe", age=40),
+    Patient(first_name="Jane", last_name="Doe", age=30),
+]
+
+
+queue: SQSQueue[Patient] = SQSQueue(name="my-queue-name", message_model=Patient)
+queue.send_messages(messages)
+```
+
+Receive and delete messages:
+
+```python
+handles, messages = queue.receive_messages()
+queue.delete_messages(handles)
+```
+
 # Overview
 
 A set of helper functions for CSV to Salesforce procedures, with reporting in AWS S3.

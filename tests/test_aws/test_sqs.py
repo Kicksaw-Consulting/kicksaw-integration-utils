@@ -28,7 +28,7 @@ def queue():
         yield SQSQueue.from_name(queue_name, Message, region_name="us-east-1")
 
 
-def test_multiple_messages(queue: SQSQueue, messages: List[BaseModel]):
+def test_multiple_messages(queue: SQSQueue, messages: List[Message]):
     # Send messages
     send_results = queue.send_messages(messages)
     assert all(send_results)
@@ -56,7 +56,32 @@ def test_send_single_message(queue: SQSQueue):
     assert len(handles) == len(received_messages) == 1
 
 
-def test_warn_max_poll_attempts(queue: SQSQueue, messages: List[BaseModel]):
+def test_receive_single_message(queue: SQSQueue, messages: List[Message]):
+    # Send messages
+    send_results = queue.send_messages(messages)
+    assert all(send_results)
+
+    # Receive message
+    handle, received_message = queue.receive_message()
+    assert handle is not None
+    assert isinstance(received_message, Message)
+
+    # Delete message
+    delete_results = queue.delete_message(handle)
+    assert delete_results
+
+    # Receive remaining messages
+    handles, received_messages = queue.receive_messages()
+    assert len(handles) == len(received_messages) == len(messages) - 1
+
+
+def test_receive_single_message_from_empty_queue(queue: SQSQueue):
+    handle, received_message = queue.receive_message()
+    assert handle is None
+    assert received_message is None
+
+
+def test_warn_max_poll_attempts(queue: SQSQueue, messages: List[Message]):
     queue.send_messages(messages)
     with pytest.warns(
         UserWarning,
