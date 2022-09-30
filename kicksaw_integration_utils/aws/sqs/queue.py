@@ -33,6 +33,8 @@ class SQSQueue(Generic[PydanticModel]):
     -------
     from_name
     send_message
+    receive_message
+    delete_message
     send_messages
     receive_messages
     delete_messages
