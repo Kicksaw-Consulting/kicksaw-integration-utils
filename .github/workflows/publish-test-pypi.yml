@@ -1,31 +1,32 @@
-name: Test
+name: Publish to TestPyPI
 
 on:
-  pull_request:
   push:
     branches:
       - main
 
+env:
+  PYTHON_VERSION: "3.10"
+
 jobs:
-  test:
-    name: Test with python-${{ matrix.python-version }}
+  publish-test-pypi:
+    name: Publish to TestPyPI
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+    environment:
+      name: test
+      url: https://test.pypi.org/project/kicksaw-integration-utils
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Setup python
+      - name: Install python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ env.PYTHON_VERSION }}
       - name: Cache poetry installation
         id: cache-poetry
         uses: actions/cache@v3
         with:
-          key: poetry-${{ hashFiles('poetry.lock') }}-py${{ matrix.python-version }}
+          key: poetry-${{ hashFiles('poetry.lock') }}-py${{ env.PYTHON_VERSION }}
           path: |
             ~/.local/bin/poetry
             ~/.local/share/pypoetry
@@ -34,8 +35,8 @@ jobs:
         if: ${{ steps.cache-poetry.outputs.cache-hit != 'true' }}
         run: curl -sSL https://install.python-poetry.org | python3 -
       - name: Install project and its dependencies
+        run: poetry install
+      - name: Publish to TestPyPI
         run: |
-          export PATH="~/.local/share/pypoetry/bin:$PATH"
-          poetry install
-      - name: Run tests
-        run: poetry run pytest --cov-report=xml:coverage.xml
+          poetry config repositories.test-pypi https://test.pypi.org/legacy/
+          poetry publish --build --repository test-pypi --username __token__ --password ${{ secrets.PYPI_TOKEN }} --skip-existing
